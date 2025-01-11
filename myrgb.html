@@ -15,19 +15,24 @@
         height: 100%;
       }
       body {
-        font-family: monospace,monospace;
+        font-family: "Space Mono", monospace,monospace;
         font-size: large;
         margin: 0;
-        padding: 1em;
+        padding: 0 1em;
         text-align: center;
         box-sizing: border-box;
         height: 100%;
       }
       main {
-        min-height: calc(100% - 4em);
+        min-height: calc(100% - 3em);
       }
-      h1 {
-        margin: 0 0 1em 0;
+      .title {
+        display: inline-block;
+        background: black;
+        padding: 0 12px 4px;
+        border-top: 0;
+        color: white;
+        font-size: 22px;
       }
       div.ruler, div.slider {
         align-items: center;
@@ -39,12 +44,25 @@
         display: flex;
         justify-content: space-between;
         width: 100%;
+        margin: 4px;
       }
-      label {
-        padding-right: 1em;
+      div.ruler div span {
+        width: 20px
       }
       input {
         width: 100%;
+      }
+      button {
+        background: white;
+        color: black;
+        border: 2px solid;
+        border-radius: 4px;
+        box-shadow: 0 4px;
+      }
+      button:active {
+        position: relative;
+        top: 4px;
+        box-shadow: 0 0;
       }
       div#info, button {
         margin: 1em auto;
@@ -68,7 +86,7 @@
         display: none;
       }
       footer {
-        line-height: 4em;
+        line-height: 3em;
       }
       footer a {
         margin-right: 1.5em;
@@ -76,6 +94,48 @@
       footer a:last-child {
         margin-right: 0;
       }
+      a {
+        color: inherit;
+      }
+
+
+
+input[type=range] {
+  -webkit-appearance: none;  
+  appearance: none;
+  height: 25px; 
+  outline: none;
+  padding: 4px;
+  border-radius: 16px; 
+  box-shadow: 0 2px 4px #0001;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; 
+  appearance: none;
+  width: 25px; 
+  height: 25px; 
+  border-radius: 50%;
+  cursor: pointer; 
+  box-shadow: 0 2px 4px #0001;
+  
+}
+
+input[type=range]::-webkit-slider-thumb,
+input[type=range]::-moz-range-thumb {
+  width: 25px; 
+  height: 25px; 
+  border-radius: 50%;
+  cursor: pointer; 
+  box-shadow: 0 2px 4px #0001;
+} 
+
+@font-face {
+  font-family: "Space Mono";
+  font-weight: 400;
+  src: url(./SpaceMono-Regular.ttf);
+}
+
     </style>
     <script>
       'use strict'
@@ -154,9 +214,9 @@
         const dark = luminance(r, g, b) < luminance(8, 8, 8)
         document.body.style.background = hex(r, g, b)
         document.body.style.color = dark ? '#fff' : '#000'
-        rin.style.accentColor = dark ? '#f99' : '#900'
-        gin.style.accentColor = dark ? '#0c0' : '#050'
-        bin.style.accentColor = dark ? '#0cf' : '#00f'
+        rin.style.backgroundColor = dark ? '#f00' : '#f00'
+        gin.style.backgroundColor = dark ? '#0f0' : '#0f0'
+        bin.style.backgroundColor = dark ? '#00f' : '#00f'
         const anchors = document.getElementsByTagName('a')
         for (let i = 0; i < anchors.length; ++i) {
           const a = anchors[i]
@@ -313,14 +373,20 @@
         }
       }
 
+      function prevent(event) {
+        // TODO: Need to figure out how to stop the page scrolling from there 
+        // debugger;
+        // event.preventDefault();
+        // event.stopPropagation();
+      }
+
       window.addEventListener('load', init)
     </script>
   </head>
   <body>
     <main>
-      <h1>Guess My RGB</h1>
+      <span class="title">Guess My RGB_</span>
       <div class="ruler">
-        <label>&nbsp;</label>
         <div>
           <span>0</span>
           <span>1</span>
@@ -340,16 +406,13 @@
           <span>F</span>
         </div>
       </div>
-      <div class="slider">
-        <label for="rin">R</label>
+      <div class="slider" onscroll="prevent(event)" ontouchmove="prevent(event)">
         <input type="range" id="rin" name="rin" max="15" list="values">
       </div>
-      <div class="slider">
-        <label for="gin">G</label>
+      <div class="slider" onscroll="prevent(event)" ontouchmove="prevent(event)">
         <input type="range" id="gin" name="gin" max="15" list="values">
       </div>
-      <div class="slider">
-        <label for="bin">B</label>
+      <div class="slider" onscroll="prevent(event)" ontouchmove="prevent(event)">
         <input type="range" id="bin" name="bin" max="15" list="values">
       </div>
       <datalist id="values">

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logo</title>
+</head>
+<body>
+  <div class="iconnn">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+
+  <style>
+    body {
+      background-color: black;
+    }
+    .icon {
+      position: relative;
+      width: 256px;
+      height: 256px;
+      background: black;
+      border-radius: 40px;
+      margin: 40px;
+      padding: 10%;
+    }
+
+    .icon div:nth-child(1) {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0%;
+      left: 0%;
+      border-radius: 50%;
+      background: conic-gradient(#f00 0deg, #700 360deg);
+      transform: rotate(-50deg);
+    }
+
+    .icon div:nth-child(2) {
+      position: absolute;
+      width: 70%;
+      height: 70%;
+      top: 15%;
+      left: 15%;
+      border-radius: 50%;
+      background: conic-gradient(#0f0 0deg, #070 360deg);
+    }
+
+    .icon div:nth-child(3) {
+      position: absolute;
+      width: 40%;
+      height: 40%;
+      top: 30%;
+      left: 30%;
+      border-radius: 50%;
+      background: conic-gradient(#00f 0deg, #007 360deg);
+      transform: rotate(50deg);
+    }
+
+    .iconnn {
+      position: relative;
+      width: 256px;
+      height: 256px;
+      background: black;
+      border-radius: 40px;
+      margin: 40px;
+      padding: 10%;
+    }
+
+    .iconnn div {
+      position: relative;
+      width: 100%;
+      height: 60px;
+      border-radius: 30px;
+      margin: 20px 0;
+    }
+    .iconnn div:after {
+      content: '';
+      position: absolute;
+      display: inline-block;
+      top: 5px;
+      width: 50px;
+      height: 50px;
+      background-color: white;
+      border-radius: 50%;
+    }
+
+    .iconnn div:nth-child(1) {
+      background: #f00 ;
+    }
+    .iconnn div:nth-child(1):after {
+      left: 60%;
+    }
+
+    .iconnn div:nth-child(2) {
+      background: #0f0 ;
+    }
+    .iconnn div:nth-child(2):after {
+      left: 20%;
+    }
+
+    .iconnn div:nth-child(3) {
+      background: #00f ;
+    }
+    .iconnn div:nth-child(3):after {
+      left: 40%;
+    }
+  </style>
+</body>
+</html>

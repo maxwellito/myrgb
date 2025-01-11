@@ -1,0 +1,14 @@
+{
+  "name": "Guess my RGB",
+  "short_name": "My RGB",
+  "icons": [{
+      "src": "./icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }],
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#000000"
+}
