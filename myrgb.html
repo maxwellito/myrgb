@@ -10,6 +10,7 @@
     <title>Guess My RGB</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A simple RGB color guessing game.">
+    <link rel="manifest" href="./manifest.json" />
     <style>
       html {
         height: 100%;
@@ -381,6 +382,12 @@ input[type=range]::-moz-range-thumb {
       }
 
       window.addEventListener('load', init)
+    </script>
+    <script type="text/javascript">
+      // Set up service worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js');
+      }
     </script>
   </head>
   <body>
