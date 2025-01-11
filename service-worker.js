@@ -1,5 +1,5 @@
 var APP_NAME = 'myrgb',
-    APP_VERSION = 1,
+    APP_VERSION = 2,
     CACHE_NAME = APP_NAME + '_' + APP_VERSION;
 var filesToCache = [
   './myrgb.html',
