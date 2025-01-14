@@ -131,7 +131,7 @@ input[type=range]::-moz-range-thumb {
   border-radius: 50%;
   cursor: pointer; 
   border: none;
-  background: red;
+  background: white;
   box-shadow: 0 2px 4px #0001;
 } 
 
@@ -293,7 +293,13 @@ input[type=range]::-moz-range-thumb {
           rr = rin.valueAsNumber
           gg = gin.valueAsNumber
           bb = bin.valueAsNumber
-          submit.innerHTML = 'Submit ' + hex(rr, gg, bb)
+          const hexValue = hex(rr, gg, bb);
+          submit.innerHTML = 'Submit ' + hexValue
+          const previousAttempt = document.querySelector(`[data-rgb="${hexValue}"]`);
+          if (previousAttempt && previousAttempt.getAttribute('data-scored')) {
+            const scored = previousAttempt.getAttribute('data-scored');
+            submit.innerHTML += ` (${scored}%)`;
+          }
           submit.style.display = 'inline-block'
           info.style.display = 'none'
           if (navigator.vibrate)
@@ -316,6 +322,7 @@ input[type=range]::-moz-range-thumb {
         scored = (scored < 10 ? '0' : '') + scored
         div.style.background = rgbHex
         div.style.color = dark ? '#fff' : '#000'
+        div.setAttribute('data-rgb', rgbHex);
         div.innerHTML = lPad + attempts + ') ' + rgbHex
         log('input=' + rr + ',' + gg + ',' + bb + ' hex=' + rgbHex +
             ' scored=' + scored + ' won=' + won)
@@ -327,11 +334,26 @@ input[type=range]::-moz-range-thumb {
           div.innerHTML += ' (Try again)' + rPad
         } else {
           div.innerHTML += ' (' + scored + '% match)' + rPad
+          div.setAttribute('data-scored', scored);
         }
+        
+        div.addEventListener('click', setValues)
         document.getElementById('result').prepend(div)
         if (attempts === MAX_ATTEMPTS) {
           halt()
         }
+      }
+
+      function setValues (event) {
+        const inputs = [rin, gin, bin];
+        event.target
+          .getAttribute('data-rgb')
+          .substring(1)
+          .split('')
+          .forEach((value, index) => 
+            inputs[index].value = parseInt(value, 16)
+          )
+        readInput();
       }
 
       function halt () {
