@@ -10,6 +10,7 @@
     <title>Guess My RGB</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A simple RGB color guessing game.">
+    <meta name="theme-color" content="#000000">
     <link rel="manifest" href="./manifest.json" />
     <style>
       html {
@@ -29,11 +30,13 @@
       }
       .title {
         display: inline-block;
-        background: black;
-        padding: 0 12px 4px;
-        border-top: 0;
-        color: white;
+        padding: 0 12px 2px;
+        border: 2px solid;
         font-size: 22px;
+
+      }
+      .title + .title {
+        border-left: none;
       }
       div.ruler, div.slider {
         align-items: center;
@@ -53,27 +56,25 @@
       input {
         width: 100%;
       }
-      button {
-        background: white;
-        color: black;
-        border: 2px solid;
-        border-radius: 4px;
-        box-shadow: 0 4px;
-      }
-      button:active {
-        position: relative;
-        top: 4px;
-        box-shadow: 0 0;
-      }
       div#info, button {
         margin: 1em auto;
       }
       button {
         max-width: 15em;
-        padding: 0.2em 0.7em;
+        padding: 0.3em 0.5em 0.4em;
         width: 100%;
-        font-family: monospace,monospace;
         font-size: 1em;
+        font-family: inherit;
+        box-shadow: 4px 4px;
+        background: none;
+        color: inherit;
+        border: 2px solid;
+        text-transform: uppercase;
+      }
+      button:active {
+        position: relative;
+        top: 4px;
+        box-shadow: 0 0;
       }
       div#result div {
         margin: 0.5em auto;
@@ -88,6 +89,7 @@
       }
       footer {
         line-height: 3em;
+        font-size: .875em;
       }
       footer a {
         margin-right: 1.5em;
@@ -128,6 +130,8 @@ input[type=range]::-moz-range-thumb {
   height: 25px; 
   border-radius: 50%;
   cursor: pointer; 
+  border: none;
+  background: red;
   box-shadow: 0 2px 4px #0001;
 } 
 
@@ -153,6 +157,7 @@ input[type=range]::-moz-range-thumb {
       let attempts = 0
       let statusTimer = null
       let slidersFrozen = false
+      const themeColorDom = window.document.querySelector('meta[name="theme-color"]');
 
       function init () {
         rin = document.getElementById('rin')
@@ -170,10 +175,63 @@ input[type=range]::-moz-range-thumb {
         rin.addEventListener('input', readInput)
         gin.addEventListener('input', readInput)
         bin.addEventListener('input', readInput)
+        rin.addEventListener('touchstart', touchstart)
+        rin.addEventListener('touchmove', touchmove)
+        rin.addEventListener('touchend', touchend)
+        gin.addEventListener('touchstart', touchstart)
+        gin.addEventListener('touchmove', touchmove)
+        gin.addEventListener('touchend', touchend)
+        bin.addEventListener('touchstart', touchstart)
+        bin.addEventListener('touchmove', touchmove)
+        bin.addEventListener('touchend', touchend)
         submit.addEventListener('click', submitInput)
         restart.addEventListener('click', newGame)
         mode.addEventListener('click', changeMode)
         newGame()
+      }
+
+      // Touch funky business for iOS
+      const touches = {
+        rin: null,
+        gin: null,
+        bin: null
+      }
+      function touchstart(event) {
+        const {currentTarget} = event
+        const id = currentTarget.id;
+        if (!touches.hasOwnProperty(id)) {
+          return;
+        }
+        touches[id] = {
+          start: event.touches[0].clientX,
+          value: parseInt(currentTarget.value),
+          gap: (currentTarget.clientWidth - currentTarget.clientHeight) / 16,
+        };
+      }
+      function touchmove(event) {
+        const {currentTarget} = event
+        const touch = touches[currentTarget.id];
+        if (!touch) {
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        const {clientX} = event.touches[0];
+        const delta = Math.round((clientX - touch.start) / touch.gap);
+        const newValue = Math.min(15, Math.max(0, touch.value + delta))
+        if (newValue == currentTarget.value) {
+          return;
+        }
+        currentTarget.value = newValue;
+        readInput();
+      }
+      function touchend(event) {
+        const {currentTarget} = event
+        const id = currentTarget.id;
+        if (!touches.hasOwnProperty(id)) {
+          return;
+        }
+        touches[id] = null;
       }
 
       function newGame () {
@@ -213,6 +271,7 @@ input[type=range]::-moz-range-thumb {
 
       function paintGame (r, g, b) {
         const dark = luminance(r, g, b) < luminance(8, 8, 8)
+        themeColorDom.setAttribute('content', hex(r, g, b))
         document.body.style.background = hex(r, g, b)
         document.body.style.color = dark ? '#fff' : '#000'
         rin.style.backgroundColor = dark ? '#f00' : '#f00'
@@ -237,6 +296,8 @@ input[type=range]::-moz-range-thumb {
           submit.innerHTML = 'Submit ' + hex(rr, gg, bb)
           submit.style.display = 'inline-block'
           info.style.display = 'none'
+          if (navigator.vibrate)
+            navigator.vibrate(20)
         }
       }
 
@@ -374,13 +435,6 @@ input[type=range]::-moz-range-thumb {
         }
       }
 
-      function prevent(event) {
-        // TODO: Need to figure out how to stop the page scrolling from there 
-        // debugger;
-        // event.preventDefault();
-        // event.stopPropagation();
-      }
-
       window.addEventListener('load', init)
     </script>
     <script type="text/javascript">
@@ -392,7 +446,7 @@ input[type=range]::-moz-range-thumb {
   </head>
   <body>
     <main>
-      <span class="title">Guess My RGB_</span>
+      <span class="title">Guess My RGB</span><span class="title">?</span>
       <div class="ruler">
         <div>
           <span>0</span>
@@ -413,13 +467,13 @@ input[type=range]::-moz-range-thumb {
           <span>F</span>
         </div>
       </div>
-      <div class="slider" onscroll="prevent(event)" ontouchmove="prevent(event)">
+      <div class="slider">
         <input type="range" id="rin" name="rin" max="15" list="values">
       </div>
-      <div class="slider" onscroll="prevent(event)" ontouchmove="prevent(event)">
+      <div class="slider">
         <input type="range" id="gin" name="gin" max="15" list="values">
       </div>
-      <div class="slider" onscroll="prevent(event)" ontouchmove="prevent(event)">
+      <div class="slider">
         <input type="range" id="bin" name="bin" max="15" list="values">
       </div>
       <datalist id="values">
