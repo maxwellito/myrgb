@@ -92,7 +92,7 @@
         font-size: .875em;
       }
       footer a {
-        margin-right: 1.5em;
+        margin-right: .5em;
       }
       footer a:last-child {
         margin-right: 0;
@@ -147,7 +147,7 @@ input[type=range]::-moz-range-thumb {
 
       const LOGGING = false
       const MAX_ATTEMPTS = 99
-
+      
       let r = 0
       let g = 0
       let b = 0
@@ -364,6 +364,19 @@ input[type=range]::-moz-range-thumb {
       }
 
       function win () {
+
+        const data = {
+          spot: hex(r, g, b),
+          date: Date.now(),
+          attempts,
+          history: []
+        };
+        const logDoms = document.querySelectorAll(`[data-rgb]`);
+        logDoms.forEach((logDom) => data.history.push(logDom.getAttribute('data-rgb')));
+
+        console.log(data);
+        debugger;
+
         slidersFrozen = true
         submit.style.display = 'none'
         restart.style.display = 'inline-block'
@@ -461,7 +474,7 @@ input[type=range]::-moz-range-thumb {
     </script>
     <script type="text/javascript">
       // Set up service worker
-      if ('serviceWorker' in navigator) {
+      if ('serviceWorker' in navigator && window.location.host !== "localhost:8080") {
         navigator.serviceWorker.register('service-worker.js');
       }
     </script>
