@@ -32,12 +32,13 @@
         --border: 2px solid currentColor;
         --frost: #fff3;
         --spacing: 1em;
+        --shadow: 4px;
       }
-      body.bright {
+      body.dark {
         --color: #fff;
         --frost: #fff3;
       }
-      body.dark {
+      body.light {
         --color: #000;
         --frost: #0003;
       }
@@ -45,15 +46,36 @@
         font-family: "Space Mono", monospace,monospace;
         font-size: large;
         margin: 0;
-        /* padding: 1em; */
         text-align: center;
         box-sizing: border-box;
         height: 100%;
+        color: var(--color);
       }
       a {
         color: inherit;
       }
 
+
+      dialog {
+        width: calc(100vw - 2em - var(--shadow));
+        max-width: 40em;
+        height: calc(100vh - 2em - var(--shadow));
+        border: var(--border);
+        box-shadow: var(--shadow) var(--shadow);
+        box-sizing: border-box;
+        text-align: left;
+
+
+        .nu {
+          font-size: 2em;
+          float: right;
+          width: 1.3em;
+        }
+      }
+      dialog::backdrop,
+      dialog[open]::backdrop {
+        background-color: transparent;
+      }
 
 
       .container {
@@ -75,7 +97,8 @@
         margin: calc(50vh - 10em) auto 0;
       }
 
-      header button {
+      header button,
+      button.nu {
         background: none;
         border: none;
         margin: 0;
@@ -162,7 +185,7 @@
         margin: 1em auto;
         font-size: 1em;
         font-family: inherit;
-        box-shadow: 4px 4px;
+        box-shadow: var(--shadow) var(--shadow);
         background: none;
         color: inherit;
         border: 2px solid;
@@ -321,7 +344,7 @@
         const colorLum = luminance(r, g, b);
         if (colorLum < luminance(7, 7, 7)) {
           dark = true;
-        } else if (colorLum < luminance(9, 9, 9)) {
+        } else if (colorLum > luminance(9, 9, 9)) {
           dark = false;
         } else {
           dark = Math.random() > .5;
@@ -534,11 +557,11 @@
           <span class="logo-main">Guess My RGB</span><span class="logo-qmark">?</span>
         </span>
         <span>
-          <button>
+          <button onclick="document.getElementById('history').showModal();">
             <svg viewBox="0 -960 960 960" height="30px" width="30px">
               <path fill="currentColor" d="M480-120q-138 0-240.5-91.5T122-440h82q14 104 92.5 172T480-200q117 0 198.5-81.5T760-480q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h110v80H120v-240h80v94q51-64 124.5-99T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-120Zm112-192L440-464v-216h80v184l128 128-56 56Z"/>
             </svg>
-          </button><button>
+          </button><button onclick="document.getElementById('credits').showModal();">
             <svg viewBox="0 -960 960 960" height="30px" width="30px">
               <path fill="currentColor" d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/>
             </svg>
@@ -548,55 +571,55 @@
     </header>
     <main>
       <div class="container">
-      <div class="controls">
-        <div class="ruler">
-          <span>0</span>
-          <span>1</span>
-          <span>2</span>
-          <span>3</span>
-          <span>4</span>
-          <span>5</span>
-          <span>6</span>
-          <span>7</span>
-          <span>8</span>
-          <span>9</span>
-          <span>A</span>
-          <span>B</span>
-          <span>C</span>
-          <span>D</span>
-          <span>E</span>
-          <span>F</span>
+        <div class="controls">
+          <div class="ruler">
+            <span>0</span>
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span>
+            <span>6</span>
+            <span>7</span>
+            <span>8</span>
+            <span>9</span>
+            <span>A</span>
+            <span>B</span>
+            <span>C</span>
+            <span>D</span>
+            <span>E</span>
+            <span>F</span>
+          </div>
+          <div class="slider">
+            <input type="range" id="rin" name="rin" max="15" list="values">
+            <input type="range" id="gin" name="gin" max="15" list="values">
+            <input type="range" id="bin" name="bin" max="15" list="values">
+          </div>
         </div>
-        <div class="slider">
-          <input type="range" id="rin" name="rin" max="15" list="values">
-          <input type="range" id="gin" name="gin" max="15" list="values">
-          <input type="range" id="bin" name="bin" max="15" list="values">
-        </div>
+        <datalist id="values">
+          <option value="0" label="0"></option>
+          <option value="1" label="1"></option>
+          <option value="2" label="2"></option>
+          <option value="3" label="3"></option>
+          <option value="4" label="4"></option>
+          <option value="5" label="5"></option>
+          <option value="6" label="6"></option>
+          <option value="7" label="7"></option>
+          <option value="8" label="8"></option>
+          <option value="9" label="9"></option>
+          <option value="10" label="A"></option>
+          <option value="11" label="B"></option>
+          <option value="12" label="C"></option>
+          <option value="13" label="D"></option>
+          <option value="14" label="E"></option>
+          <option value="15" label="F"></option>
+        </datalist>
+        <div id="info">Move the sliders above to guess the background RGB color.</div>
+        <button class="button" id="submit"></button>
+        <button class="button" id="restart">New Game</button>
+        <div id="result"></div>
+        <div id="status"></div>
       </div>
-      <datalist id="values">
-        <option value="0" label="0"></option>
-        <option value="1" label="1"></option>
-        <option value="2" label="2"></option>
-        <option value="3" label="3"></option>
-        <option value="4" label="4"></option>
-        <option value="5" label="5"></option>
-        <option value="6" label="6"></option>
-        <option value="7" label="7"></option>
-        <option value="8" label="8"></option>
-        <option value="9" label="9"></option>
-        <option value="10" label="A"></option>
-        <option value="11" label="B"></option>
-        <option value="12" label="C"></option>
-        <option value="13" label="D"></option>
-        <option value="14" label="E"></option>
-        <option value="15" label="F"></option>
-      </datalist>
-      <div id="info">Move the sliders above to guess the background RGB color.</div>
-      <button class="button" id="submit"></button>
-      <button class="button" id="restart">New Game</button>
-      <div id="result"></div>
-      <div id="status"></div>
-    </div>
     </main>
     <footer style="display: none;">
       <a id="mode" href="#x">Mode</a>
@@ -604,5 +627,15 @@
       <a href="https://mastodon.social/@susam">Mastodon</a>
       <a href="https://susam.net/links.html">Links</a>
     </footer>
+    <dialog id="history">
+      <button class="nu" onclick="document.getElementById('history').close();">&times;</button>
+      <h2>History</h2>
+      Content here
+    </dialog>
+    <dialog id="credits">
+      <button class="nu" onclick="document.getElementById('credits').close();">&times;</button>
+      <h2>History</h2>
+      Content here
+    </dialog>
   </body>
 </html>
