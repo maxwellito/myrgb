@@ -13,8 +13,26 @@
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="./manifest.json" />
     <style>
+
+      @font-face {
+        font-family: "Space Mono";
+        font-weight: 400;
+        src: url(./SpaceMono-Regular.ttf);
+      }
+      
       html {
         height: 100%;
+        --border: 2px solid currentColor;
+
+        --frost: #fff3;
+      }
+      body.bright {
+        --color: #fff;
+        --frost: #fff3;
+      }
+      body.dark {
+        --color: #000;
+        --frost: #0003;
       }
       body {
         font-family: "Space Mono", monospace,monospace;
@@ -25,37 +43,82 @@
         box-sizing: border-box;
         height: 100%;
       }
-      main {
-        min-height: calc(100% - 3em);
+      a {
+        color: inherit;
       }
-      .title {
-        display: inline-block;
-        padding: 0 12px 2px;
-        border: 2px solid;
-        font-size: 22px;
 
+      /* Logo */
+      .logo {
+        display: inline-block;
+        border: var(--border);
+        font-size: 22px;
       }
-      .title + .title {
-        border-left: none;
+      .logo > * {
+        display: inherit;
+        padding: 0 12px 2px;
       }
-      div.ruler, div.slider {
-        align-items: center;
-        display: flex;
+      .logo-qmark {
+        border-left: var(--border);
+        animation: 1.2s steps(1, end) logo-flick;
+      }
+      @keyframes logo-flick {
+          0.0% {background-color: #0ff;}
+         20.0% {background-color: #00f;}
+         40.0% {background-color: #f0f;}
+         60.0% {background-color: #f00;}
+         80.0% {background-color: #ff0;}
+        100.0% {background-color: #0f0;}
+      }
+
+      /* Input */
+      div.controls {
         max-width: 40em;
         margin: 0.5em auto;
       }
-      div.ruler div {
+      div.ruler {
         display: flex;
-        justify-content: space-between;
-        width: 100%;
-        margin: 4px;
-      }
-      div.ruler div span {
-        width: 20px
+        margin: 4px 0;
+        span {
+          width: calc(100% / 16);
+        }
       }
       input {
         width: 100%;
       }
+
+      input[type="range"] {
+        -webkit-appearance: none;  
+        appearance: none;
+        width: calc(100% * 15 / 16);
+        height: 25px; 
+        padding: 0;
+        border-radius: 8px;
+        margin: 0;
+        overflow: hidden;
+        transition: all .2s;
+        background: repeating-linear-gradient(to right, #8883, #8883 calc(6.6% - 1px), #8882 calc(6.6% - 1px), #8882 6.66%);
+
+        &::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          border: 0;
+          width: 0;
+          box-shadow: -100vw 0 0 100vw currentColor;
+        }
+
+        &::-moz-range-thumb {
+          border: 0;
+          width: 0;
+          box-shadow: -100vw 0 0 100vw currentColor;
+        }
+      }
+      input[type="range"]:hover {
+        background-color: #8884;
+      }
+      input#rin {color: #f00;}
+      input#gin {color: #0f0;}
+      input#bin {color: #00f;}
+
+      /* Submit */
       div#info, button {
         margin: 1em auto;
       }
@@ -76,6 +139,8 @@
         top: 4px;
         box-shadow: 0 0;
       }
+
+      /* Results */
       div#result div {
         margin: 0.5em auto;
         max-width: 20em;
@@ -87,59 +152,6 @@
         border: medium double;
         display: none;
       }
-      footer {
-        line-height: 3em;
-        font-size: .875em;
-      }
-      footer a {
-        margin-right: .5em;
-      }
-      footer a:last-child {
-        margin-right: 0;
-      }
-      a {
-        color: inherit;
-      }
-
-
-
-input[type=range] {
-  -webkit-appearance: none;  
-  appearance: none;
-  height: 25px; 
-  outline: none;
-  padding: 4px;
-  border-radius: 16px; 
-  box-shadow: 0 2px 4px #0001;
-}
-
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none; 
-  appearance: none;
-  width: 25px; 
-  height: 25px; 
-  border-radius: 50%;
-  cursor: pointer; 
-  box-shadow: 0 2px 4px #0001;
-  
-}
-
-input[type=range]::-webkit-slider-thumb,
-input[type=range]::-moz-range-thumb {
-  width: 25px; 
-  height: 25px; 
-  border-radius: 50%;
-  cursor: pointer; 
-  border: none;
-  background: white;
-  box-shadow: 0 2px 4px #0001;
-} 
-
-@font-face {
-  font-family: "Space Mono";
-  font-weight: 400;
-  src: url(./SpaceMono-Regular.ttf);
-}
 
     </style>
     <script>
@@ -270,18 +282,19 @@ input[type=range]::-moz-range-thumb {
       }
 
       function paintGame (r, g, b) {
-        const dark = luminance(r, g, b) < luminance(8, 8, 8)
-        themeColorDom.setAttribute('content', hex(r, g, b))
-        document.body.style.background = hex(r, g, b)
-        document.body.style.color = dark ? '#fff' : '#000'
-        rin.style.backgroundColor = dark ? '#f00' : '#f00'
-        gin.style.backgroundColor = dark ? '#0f0' : '#0f0'
-        bin.style.backgroundColor = dark ? '#00f' : '#00f'
-        const anchors = document.getElementsByTagName('a')
-        for (let i = 0; i < anchors.length; ++i) {
-          const a = anchors[i]
-          a.style.color = dark ? '#eef' : '#006'
+        let dark;
+        const colorLum = luminance(r, g, b);
+        if (colorLum < luminance(6, 6, 6)) {
+          dark = true;
+        } else if (colorLum < luminance(10, 10, 10)) {
+          dark = false;
+        } else {
+          dark = Math.random() > .5;
         }
+        document.body.classList.remove('dark', 'light')
+        document.body.classList.add(dark ? 'dark' : 'light')
+        document.body.style.background = hex(r, g, b)
+        themeColorDom.setAttribute('content', hex(r, g, b))
       }
 
       function readInput (e) {
@@ -481,9 +494,11 @@ input[type=range]::-moz-range-thumb {
   </head>
   <body>
     <main>
-      <span class="title">Guess My RGB</span><span class="title">?</span>
-      <div class="ruler">
-        <div>
+      <span class="logo">
+        <span class="logo-main">Guess My RGB</span><span class="logo-qmark">?</span>
+      </span>
+      <div class="controls">
+        <div class="ruler">
           <span>0</span>
           <span>1</span>
           <span>2</span>
@@ -501,15 +516,11 @@ input[type=range]::-moz-range-thumb {
           <span>E</span>
           <span>F</span>
         </div>
-      </div>
-      <div class="slider">
-        <input type="range" id="rin" name="rin" max="15" list="values">
-      </div>
-      <div class="slider">
-        <input type="range" id="gin" name="gin" max="15" list="values">
-      </div>
-      <div class="slider">
-        <input type="range" id="bin" name="bin" max="15" list="values">
+        <div class="slider">
+          <input type="range" id="rin" name="rin" max="15" list="values">
+          <input type="range" id="gin" name="gin" max="15" list="values">
+          <input type="range" id="bin" name="bin" max="15" list="values">
+        </div>
       </div>
       <datalist id="values">
         <option value="0" label="0"></option>
