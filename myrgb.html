@@ -54,6 +54,11 @@
       a {
         color: inherit;
       }
+      h1, h2, h3, h4 {
+        font-weight: 400;
+        margin: 0;
+        text-transform: uppercase;
+      }
 
 
       dialog {
@@ -208,6 +213,54 @@
         padding: 1em;
         border: var(--border);
         display: none;
+      }
+
+      /* History */
+      /* <div class="color-square" style="background: ${log.spot}"></div>
+            <div>
+              <span class="color-title">${log.spot}</span>  
+
+              <span class="color-title">
+                <span>${(""+log.attemps).padStart(3, '0')}</span> 
+                <span>${log.mode}</span>
+              </span>  
+            </div>   */
+
+      .history-date {
+        border-top: var(--border);
+        padding: .25em 0;
+        margin-top: .5em;
+      }
+      .colorlog {
+        display: flex;
+        text-transform: uppercase;
+      }      
+      .color-square {
+        width: 2em;
+        height: 2em;
+      }
+      .color-square-tiny {
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+      }
+      .color-title {
+        font-size: 26px;
+        line-height: 2rem;
+        margin-left: .2em;
+      }
+      .color-data {
+        flex-grow: 1;
+        width: 25%;
+        text-align: right;
+      }
+      .color-data > div:first-child {
+        font-size: 20px;
+        line-height: 1;
+      }
+      .color-data > div:last-child {
+        font-size: 14px;
+        line-height: 1;
       }
 
       
@@ -440,13 +493,16 @@
           spot: hex(r, g, b),
           date: Date.now(),
           attempts,
+          mode: (window.location.hash === '#x') ? 'expert' : 'normal',
           history: []
         };
         const logDoms = document.querySelectorAll(`[data-rgb]`);
         logDoms.forEach((logDom) => data.history.push(logDom.getAttribute('data-rgb')));
 
-        console.log(data);
-        debugger;
+        const history = JSON.parse(localStorage.getItem('history') || '[]');
+        history.unshift(data);
+        localStorage.setItem('history', JSON.stringify(history));
+
 
         slidersFrozen = true
         submit.style.display = 'none'
@@ -541,6 +597,50 @@
         }
       }
 
+      function openHistory() {
+
+        const historyModal = document.getElementById('history');
+        const contentDiv = historyModal.querySelector('.content');
+        const historyData = JSON.parse(localStorage.getItem('history') || '[]');
+
+        contentDiv.innerHTML = '';
+
+        if (historyData.length === 0) {
+          contentDiv.innerHTML = '<p>No items yet</p>';
+        }
+
+
+        let lastDay = null;
+        historyData.forEach(log => {
+          const day = (new Date(log.date)).toISOString().substring(0,10);
+          if (day !== lastDay) {
+            const dayTitle = document.createElement('div');
+            dayTitle.classList.add('history-date');
+            dayTitle.innerText = day;
+            contentDiv.appendChild(dayTitle);
+            lastDay = day;
+          }
+
+          const colorLog = document.createElement('div');
+          colorLog.innerHTML = `<div class="colorlog">
+            <div class="color-square" style="background: ${log.spot}"></div>
+            <div class="color-title">${log.spot}</div>  
+            <div class="color-data">
+              <div>&nbsp;</div> 
+              <div>${log.mode}</div>
+            </div> 
+            <div class="color-data">
+              <div>${(""+log.attempts).padStart(3, '0')}</div> 
+              <div>Attemps</div>
+            </div> 
+          </div>`;
+          colorLog.innerHTML += log.history.map(c => `<div class="color-square-tiny" style="background: ${c}"></div>`).join('')
+          contentDiv.appendChild(colorLog);
+        })
+        
+        historyModal.showModal();
+      }
+
       window.addEventListener('load', init)
     </script>
     <script type="text/javascript">
@@ -557,7 +657,7 @@
           <span class="logo-main">Guess My RGB</span><span class="logo-qmark">?</span>
         </span>
         <span>
-          <button onclick="document.getElementById('history').showModal();">
+          <button onclick="openHistory()">
             <svg viewBox="0 -960 960 960" height="30px" width="30px">
               <path fill="currentColor" d="M480-120q-138 0-240.5-91.5T122-440h82q14 104 92.5 172T480-200q117 0 198.5-81.5T760-480q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h110v80H120v-240h80v94q51-64 124.5-99T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-120Zm112-192L440-464v-216h80v184l128 128-56 56Z"/>
             </svg>
@@ -630,12 +730,16 @@
     <dialog id="history">
       <button class="nu" onclick="document.getElementById('history').close();">&times;</button>
       <h2>History</h2>
-      Content here
+      <div class="content"></div>
     </dialog>
     <dialog id="credits">
       <button class="nu" onclick="document.getElementById('credits').close();">&times;</button>
-      <h2>History</h2>
-      Content here
+      <h2>Credits</h2>
+      <p>Original creation made by Susam</p>
+      <a id="mode" href="#x">Mode</a>
+      <a href="https://github.com/susam/myrgb">GitHub</a>
+      <a href="https://mastodon.social/@susam">Mastodon</a>
+      <a href="https://susam.net/links.html">Links</a>
     </dialog>
   </body>
 </html>
