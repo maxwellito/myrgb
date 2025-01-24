@@ -48,7 +48,6 @@
         margin: 0;
         text-align: center;
         box-sizing: border-box;
-        height: 100%;
         color: var(--color);
       }
       a {
@@ -58,23 +57,29 @@
         font-weight: 400;
         margin: 0;
         text-transform: uppercase;
+        line-height: 1;
       }
 
 
       dialog {
-        width: calc(100vw - 2em - var(--shadow));
+        width: calc(100vw - 1em - var(--shadow));
         max-width: 40em;
-        height: calc(100vh - 2em - var(--shadow));
+        height: calc(100vh - 1em - var(--shadow));
         border: var(--border);
+        margin: 10px auto;
         box-shadow: var(--shadow) var(--shadow);
         box-sizing: border-box;
         text-align: left;
 
-
         .nu {
-          font-size: 2em;
+          font-size: 1.5em;
           float: right;
-          width: 1.3em;
+          width: 1.25em;
+          padding: 0;
+          outline: none;
+          border: var(--border);
+          height: 1.25em;
+          line-height: 0;
         }
       }
       dialog::backdrop,
@@ -89,6 +94,10 @@
         padding: var(--spacing);
       }
       header {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        right: 0px;
         border-bottom: var(--border);
         background-color: inherit;
 
@@ -105,11 +114,17 @@
       header button,
       button.nu {
         background: none;
-        border: none;
         margin: 0;
+        padding: 0;
         color: inherit;
         display: inline-block;
         vertical-align: middle;
+      }
+      header button {
+        border: none;
+      }
+      header button + button {
+        margin-left: 1em;
       }
 
       /* Logo */
@@ -120,19 +135,20 @@
         overflow: hidden;
       }
       .logo > * {
-        padding: 0 .45em .1em;
+        padding: 0 .45em 2px;
+        display: inline-block;
       }
       .logo-qmark {
         border-left: var(--border);
-        animation: 1.2s steps(1, end) logo-flick;
+        animation: 1.2s steps(2, end) logo-flick;
       }
       @keyframes logo-flick {
           0.0% {background-color: #0ff;}
-         20.0% {background-color: #00f;}
+         20.0% {background-color: #f00;}
          40.0% {background-color: #f0f;}
-         60.0% {background-color: #f00;}
+         60.0% {background-color: #0f0;}
          80.0% {background-color: #ff0;}
-        100.0% {background-color: #0f0;}
+        100.0% {background-color: #00f;}
       }
 
       /* Input */
@@ -216,51 +232,57 @@
       }
 
       /* History */
-      /* <div class="color-square" style="background: ${log.spot}"></div>
-            <div>
-              <span class="color-title">${log.spot}</span>  
-
-              <span class="color-title">
-                <span>${(""+log.attemps).padStart(3, '0')}</span> 
-                <span>${log.mode}</span>
-              </span>  
-            </div>   */
-
       .history-date {
+        display: inline-block;
+        padding: 0 .5em;
         border-top: var(--border);
-        padding: .25em 0;
         margin-top: .5em;
+        color: white;
+        background: black;
       }
       .colorlog {
         display: flex;
         text-transform: uppercase;
-      }      
-      .color-square {
-        width: 2em;
-        height: 2em;
+        border: var(--border);
+      }   
+      .colorlog + .colorlog {
+        border-top: none;
       }
-      .color-square-tiny {
-        width: 1em;
-        height: 1em;
-        display: inline-block;
+      .color-square {
+        width: 2.4em;
+        height: 2.4em;
+        border-right: var(--border);
+      }
+      .color-title, .color-data, .color-list {
+        margin-left: .4em;
       }
       .color-title {
         font-size: 26px;
-        line-height: 2rem;
-        margin-left: .2em;
+        line-height: 42px;
       }
       .color-data {
-        flex-grow: 1;
-        width: 25%;
-        text-align: right;
+        align-self: center;
       }
       .color-data > div:first-child {
-        font-size: 20px;
+        font-size: 18px;
         line-height: 1;
       }
       .color-data > div:last-child {
-        font-size: 14px;
-        line-height: 1;
+        font-size: 10px;
+        line-height: 1.2;
+      }
+      .color-list {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap-reverse;
+        flex-grow: 1;
+        align-content: flex-start;
+        height: 2.4em;
+
+        div {
+          width: .8em;
+          height: .8em;
+        }
       }
 
       
@@ -622,19 +644,16 @@
           }
 
           const colorLog = document.createElement('div');
-          colorLog.innerHTML = `<div class="colorlog">
+          colorLog.classList.add('colorlog');
+          const colorlist = log.history.map(c => `<div class="color-square-tiny" style="background: ${c}"></div>`).join('')
+          colorLog.innerHTML = `
             <div class="color-square" style="background: ${log.spot}"></div>
-            <div class="color-title">${log.spot}</div>  
-            <div class="color-data">
-              <div>&nbsp;</div> 
-              <div>${log.mode}</div>
-            </div> 
+            <div class="color-title">${log.spot}</div> 
             <div class="color-data">
               <div>${(""+log.attempts).padStart(3, '0')}</div> 
               <div>Attemps</div>
-            </div> 
-          </div>`;
-          colorLog.innerHTML += log.history.map(c => `<div class="color-square-tiny" style="background: ${c}"></div>`).join('')
+            </div>
+            <div class="color-list">${colorlist}</div>`;
           contentDiv.appendChild(colorLog);
         })
         
@@ -645,7 +664,7 @@
     </script>
     <script type="text/javascript">
       // Set up service worker
-      if ('serviceWorker' in navigator && window.location.host !== "localhost:8080") {
+      if ('serviceWorker' in navigator && window.location.host.includes('github')) {
         navigator.serviceWorker.register('service-worker.js');
       }
     </script>
