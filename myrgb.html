@@ -622,8 +622,8 @@
             dayStats.classList.add('colorstats');
             dayStats.innerHTML = `
               <div class="color-data"><div>${(''+currentDay.count).padStart(3,'0')}</div><div>Colors</div></div>
-              <div class="color-data"><div>${(''+currentDay.attemptMin).padStart(3,'0')}</div><div>Min</div></div>
-              <div class="color-data"><div>${(''+currentDay.attemptMax).padStart(3,'0')}</div><div>Max</div></div>
+              <div class="color-data"><div>${(''+currentDay.attemptMin).padStart(3,'0')}</div><div>Best</div></div>
+              <div class="color-data"><div>${(''+currentDay.attemptMax).padStart(3,'0')}</div><div>Worst</div></div>
               <div class="color-data"><div>${avg}</div><div>Average</div></div>
             `;
             contentDiv.appendChild(dayStats);
